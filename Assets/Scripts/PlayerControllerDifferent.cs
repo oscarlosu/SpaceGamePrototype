@@ -1,10 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerController : MonoBehaviour
-{
-
-    // Controls
+public class PlayerControllerDifferent : MonoBehaviour {
     public KeyCode up;
     public KeyCode down;
     public KeyCode left;
@@ -27,10 +24,8 @@ public class PlayerController : MonoBehaviour
 
     private float xBorder = 43f;
     private float yBorder = 27f;
-
     // Use this for initialization
-    void Start()
-    {
+    void Start () {
         rigidbody.AddForceAtPosition(transform.position * 500f, Vector2.zero);
         shield.enabled = false;
         leftThrust = false;
@@ -38,12 +33,11 @@ public class PlayerController : MonoBehaviour
         gun = false;
         shieldsUp = false;
     }
-
-    // Update is called once per frame
-    void Update()
-    {
+	
+	// Update is called once per frame
+	void Update () {
         Vector2 force = (Vector2.zero - new Vector2(transform.position.x, transform.position.y)).normalized;
-        rigidbody.AddForce(force * (Mathf.Abs(Vector2.Distance(new Vector2(xBorder - transform.position.x, yBorder - transform.position.y), Vector2.zero)) / 4));
+        rigidbody.AddForce(force * (Mathf.Abs(Vector2.Distance(new Vector2(xBorder-transform.position.x, yBorder - transform.position.y),Vector2.zero))/4));
 
         if (transform.position.x < -xBorder || transform.position.x > xBorder)
         {
@@ -69,7 +63,7 @@ public class PlayerController : MonoBehaviour
             if (!cooldown)
             {
                 float newY;
-                if(transform.position.y < 0)
+                if (transform.position.y < 0)
                 {
                     newY = yBorder;
                 }
@@ -83,8 +77,6 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // Take user input
-        // Movement
         if (Input.GetKeyDown(up))
         {
             Forward();
@@ -106,23 +98,27 @@ public class PlayerController : MonoBehaviour
 
     void Forward()
     {
-        rigidbody.velocity = Vector2.zero;
-        rigidbody.AddForce(transform.up * 50f, ForceMode2D.Impulse);
+        //rigidbody.velocity = Vector2.zero;
+        rigidbody.AddForce(transform.up * 10f, ForceMode2D.Impulse);
     }
     void LeftThrust()
     {
         if (leftThrust)
         {
-            rigidbody.angularVelocity = 0;
-            rigidbody.AddTorque(2.5f, ForceMode2D.Impulse);
+            if (rigidbody.angularVelocity < 0)
+                rigidbody.angularVelocity = 0;
+            else
+                rigidbody.AddTorque(1f, ForceMode2D.Impulse);
         }
     }
     void RightThrust()
     {
         if (rightThrust)
         {
-            rigidbody.angularVelocity = 0;
-            rigidbody.AddTorque(-2.5f, ForceMode2D.Impulse);
+            if (rigidbody.angularVelocity > 0)
+                rigidbody.angularVelocity = 0;
+            else
+                rigidbody.AddTorque(-1f, ForceMode2D.Impulse);
         }
     }
     void Shoot()
@@ -133,8 +129,8 @@ public class PlayerController : MonoBehaviour
             GameObject newBullet = (GameObject)Instantiate(bullet, transform.position + transform.forward * bulletSpawnOffset, Quaternion.identity);
             newBullet.GetComponent<Rigidbody2D>().AddForce(transform.up * (bulletSpeed + rigidbody.velocity.magnitude), ForceMode2D.Impulse);
             // Backwards thrust
-            rigidbody.velocity = Vector2.zero;
-            rigidbody.AddForce(-transform.up * 20f, ForceMode2D.Impulse);
+            //rigidbody.velocity = Vector2.zero;
+            rigidbody.AddForce(-transform.up * 2.5f, ForceMode2D.Impulse);
             gunCooldown = true;
             StartCoroutine("GunCooldownFuntion");
         }
@@ -178,7 +174,7 @@ public class PlayerController : MonoBehaviour
             // Destroy object
             GameObject.Destroy(other.gameObject);
         }
-        if(other.gameObject.tag == "Shield")
+        if (other.gameObject.tag == "Shield")
         {
             shieldsUp = true;
             shield.enabled = true;
